@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Crawler Dashboard</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+        }
+
+        header p.subtitle {
+            color: var(--gray);
+        }
+
+        .input-section {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="url"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--gray);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: var(--secondary);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid var(--light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            background: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .meta-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .meta-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+
+        .meta-item pre {
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .error {
+            color: var(--warning);
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SEO Crawler Dashboard</h1>
+            <p class="subtitle">Analyze your website's SEO parameters</p>
+        </header>
+
+        <section class="input-section">
+            <div class="input-group">
+                <input type="url" id="websiteUrl" placeholder="Enter website URL (e.g., https://example.com)" required>
+                <button id="crawlBtn">Crawl</button>
+            </div>
+            <p>Enter a valid website URL to analyze its SEO elements.</p>
+        </section>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Crawling your website...</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="seo-analysis">
+                <h3>SEO Analysis</h3>
+                <div id="seoResults"></div>
+            </div>
+
+            <!-- Extra Metrics: PageSpeed & Link Health -->
+<div class="extra-metrics">
+    <h4>PageSpeed & Mobile Friendliness</h4>
+    <div class="metric"><strong>Performance:</strong> <span id="pagespeed-score">--</span></div>
+    <div class="metric"><strong>Accessibility:</strong> <span id="accessibility-score">--</span></div>
+    <div class="metric"><strong>SEO Score:</strong> <span id="seo-score">--</span></div>
+    <div class="metric"><strong>Best Practices:</strong> <span id="best-practices-score">--</span></div>
+    <div class="metric"><strong>Mobile Friendly:</strong> <span id="mobile-friendly">--</span></div>
+
+    <h4>Link Health</h4>
+    <div class="metric"><strong>Total Links:</strong> <span id="total-links">0</span></div>
+    <div class="metric"><strong>Internal Links:</strong> <span id="internal-links">0</span></div>
+    <div class="metric"><strong>External Links:</strong> <span id="external-links">0</span></div>
+    <div class="metric"><strong>Broken Links:</strong> <span id="broken-links">0</span></div>
+</div>
+       </div>
+    </div>
+
+    <script>
+        const websiteUrlInput = document.getElementById('websiteUrl');
+        const crawlBtn = document.getElementById('crawlBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsSection = document.getElementById('resultsSection');
+        const seoResults = document.getElementById('seoResults');
+
+        // Initialize
+        function init() {
+            crawlBtn.addEventListener('click', crawlWebsite);
+        }
+
+
+
+        // Crawl website
+        async function crawlWebsite() {
+            const url = websiteUrlInput.value.trim();
+            if (!url) {
+                alert('Please enter a valid website URL');
+                return;
+            }
+
+            loadingIndicator.style.display = 'block';
+            resultsSection.style.display = 'none';
+            seoResults.innerHTML = '';
+
+            try {
+                const response = await fetch('/crawl', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displaySeoResults(data);
+                } else {
+                    seoResults.innerHTML = `<p class="error">Error: ${data.message}</p>`;
+                }
+            } catch (error) {
+                seoResults.innerHTML = `<p class="error">Error crawling website: ${error.message}</p>`;
+            } finally {
+                loadingIndicator.style.display = 'none';
+                resultsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        } 
+
+        // Display SEO results
+        function displaySeoResults(data) {
+            seoResults.innerHTML = `
+                <div class="meta-item"><strong>Title:</strong> ${data.title}</div>
+                <div class="meta-item"><strong>Meta Description:</strong> ${data.meta_description}</div>
+                <div class="meta-item"><strong>Meta Keywords:</strong> ${data.meta_keywords}</div>
+                <div class="meta-item"><strong>Canonical URL:</strong> ${data.canonical}</div>
+                <div class="meta-item"><strong>Viewport:</strong> ${data.viewport}</div>
+                <div class="meta-item"><strong>H1 Tag:</strong> ${data.h1}</div>
+                <div class="meta-item"><strong>Images without Alt Text:</strong> ${data.images_without_alt}</div>
+                <div class="meta-item"><strong>Top Keywords:</strong> ${data.keywords}</div>
+                
+            `;
+
+            }
+
+        // Initialize when DOM is loaded//<div class="meta-item"><strong>Robots.txt Content:</strong> <pre>${data.robots}</pre></div>//
+        document.addEventListener('DOMContentLoaded', init);
+
+
+    </script>
+</body>
+</html>

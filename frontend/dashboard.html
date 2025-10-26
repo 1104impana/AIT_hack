@@ -1,0 +1,37 @@
+<!-- frontend/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Autonomous SEO Agent</title>
+</head>
+<body>
+    <h1>Autonomous SEO + AEO Optimization</h1>
+    <input id="url" placeholder="Enter URL">
+    <input id="post_id" placeholder="WordPress Post ID (optional)">
+    <button onclick="analyze()">Analyze Now</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function analyze() {
+            const url = document.getElementById('url').value;
+            const post_id = document.getElementById('post_id').value || null;
+            if(!url) return;
+
+            const res = await fetch('http://127.0.0.1:5000/analyze', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({url, post_id})
+            });
+
+            const data = await res.json();
+            document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            const url = document.getElementById('url').value;
+            if(url) analyze();
+        }, 30000);
+    </script>
+</body>
+</html>
