@@ -131,9 +131,15 @@ export const Chatbot: React.FC<ChatbotProps> = ({ reportContext, apiKey }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[calc(100vw-3rem)] max-w-md h-[60vh] bg-secondary rounded-xl shadow-2xl flex flex-col z-20 animate-fade-in">
-          <header className="p-4 border-b border-primary/50">
+        <div className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 w-[calc(100vw-2rem)] sm:w-[calc(100vw-3rem)] max-w-md h-[70vh] sm:h-[60vh] bg-secondary rounded-xl shadow-2xl flex flex-col z-20 animate-fade-in">
+          <header className="p-3 sm:p-4 border-b border-primary/50 flex items-center justify-between">
             <h3 className="font-bold text-lg text-text-primary">AI SEO Assistant</h3>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-primary/50 rounded-full transition-colors"
+            >
+              <CloseIcon className="w-6 h-6" />
+            </button>
           </header>
 
           {/* Chat messages */}
@@ -165,7 +171,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ reportContext, apiKey }) => {
           </div>
 
           {/* Input area */}
-          <footer className="p-4 border-t border-primary/50">
+          <footer className="p-3 sm:p-4 border-t border-primary/50">
             <div className="flex items-center bg-primary rounded-lg">
               <input
                 type="text"
@@ -173,15 +179,15 @@ export const Chatbot: React.FC<ChatbotProps> = ({ reportContext, apiKey }) => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder={placeholderText}
-                className="flex-grow bg-transparent px-4 py-2 focus:outline-none text-text-primary"
+                className="flex-grow bg-transparent px-3 sm:px-4 py-2 focus:outline-none text-text-primary text-sm sm:text-base"
                 disabled={isChatDisabled}
               />
               <button
                 onClick={handleSend}
                 disabled={isChatDisabled || !input.trim()}
-                className="p-3 text-accent disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="p-2 sm:p-3 text-accent hover:text-highlight disabled:text-gray-500 disabled:cursor-not-allowed transition-colors"
               >
-                <PaperAirplaneIcon className="w-6 h-6" />
+                <PaperAirplaneIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
           </footer>

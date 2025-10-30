@@ -13,9 +13,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ report }) => {
   return (
     <div className="space-y-8">
       {/* Overall Score Section */}
-      <div className="bg-secondary rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-6">
+      <div className="bg-secondary rounded-xl shadow-lg p-4 sm:p-6 flex flex-col md:flex-row items-center gap-4 sm:gap-6">
         <div className="relative">
-          <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+          <svg className="w-24 h-24 sm:w-32 sm:h-32 transform -rotate-90" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="12" />
             <circle
               cx="60"
